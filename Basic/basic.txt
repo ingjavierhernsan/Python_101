@@ -1,0 +1,54 @@
+# Python_101
+
+Built-in Data types
+
+Python has the following data types built-in by default, in these categories:
+
+Test type: str
+Numeric types: int, float, complex
+Sequence types: list, typle, range
+Mapping type: dict
+Set types: set, frozenset
+Boolean type: bool
+Binary types: bytes, bytearray, memoryview
+None type: NoneType
+
+Getting the data type
+You can get the type of any object by using the type() function:
+
+x = 5
+print(type(x))
+
+Setting the data type
+
+str => x = "Hello world"
+int  => x = 20
+float  => x = 20.5
+complex  => x = 1j
+list => x = ["apple", "banana", "cherry"]
+tuple  => x = ("apple", "banana", "cherry")
+range => x = range(6)
+dict => x = {"name" : "John", "age" : 36}
+set => x = {"apple", "banan", "cherry"}
+frozeset  => x = frozenset({"apple", "banana", "cherry"})
+bool => x = True
+bytes => x = b"Hello"
+bytearray => x = bytearray(5)
+memoryview => x = memoryview(bytes(5))
+NoneType => x = None
+
+Setting the specific data type
+
+str => x = str("Hello world")
+int => x = int(20)
+float => x = float(20.5)
+complex => x = complex(1j)
+list => x = list(("apple", "banana", "cherry"))
+tuple => x = tuple(("apple", "banana", "cherry"))
+range => x = range(6)
+dict => x = dict(name="John", age=36)
+set => x = set(("apple", "banana", "cherry"))
+frozenset => x = frozenset(("apple", "banana", "cherry"))
+bytes => x = bytes(5)
+bytearray => x = bytearray(5)
+memoryview => x = memoryview(bytes(5))

@@ -1,0 +1,332 @@
+DJANGO
+Virtual environment
+Create a virtual environment:
+
+Windows
+python -m venv myworld
+
+Unix/MacOS
+python3 -m venv myworld
+
+This will set up a virtual environment, and create a folder named "myworld" with subfolders and files, like this:
+
+myworld
+    Include
+    Lib
+    Scripts
+    .gitingore
+    pyvenv.cfg
+
+Activate the virtual environment:
+Windows
+myworld\Scripts\activate.bat
+
+Unix/MacOS
+source myworld/bin/activate
+
+Once the environment is activated, you will see this result in the command prompt:
+Windows
+(myworld) C:\Users\Your Name>
+
+Unix\MacOS:
+(myworld) ... $
+
+Note: You must activate the virtual environment every time you open the command prompt to work on your project.
+
+Install Django
+Note: Remember to install Django while you are in the virtual environment.
+
+(myworld) ... $python3 -m pip install Django
+
+Check Django version
+
+(myworld) ... $django-admin --version
+
+Create a Django project
+Go to myworld folder.
+Run this command in the command prompt:
+
+django-admin startproject my_tennis_club
+
+Django creates a my_tennis_club folder on the computer.
+
+Run the Django project
+Navigate to the /my_tennis_club folder and execute this command in the command prompt:
+
+python3 manage.py runserver
+
+Create an App
+Createa an app with the name members.
+In the folder my_tennis_club execute this command:
+
+python3 manage.py startapp memebers
+
+Django creates a folder named members in the project.
+
+Views
+There is a views.py in your members folder that looks like this:
+
+from django.shortcuts import render
+
+# Create your views here.
+
+Find it and open it, and replace the content with this:
+
+from django.shorcuts import render
+from django.http import HttpResponse
+
+def memgers(request):
+    return HttpResponse("Hello world!")
+
+URLs
+
+Create a file named urls.py in the same folder as the views.py file, and type this code in it:
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('members/', views.members, name='members'),
+]
+
+The yrls.py file you just created is specific for the members application. We have to do some routing in the root directory my_tennis_club as well. This may seem complicated, but for now, just follow the instructions below.
+
+There is a file called urls.py on the my_tennis_club folder, open that file and add the include module in the import statement, and also add a path() function in the urlpatterns[] list, with arguments that will route users that comes in via 127.0.0.1:8000/.
+
+my_tennis_club/my_tennis_club/urls.py
+
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path('', include('members.urls')),
+    path('admin/', admin.site.urls),
+]
+
+Run the server and in the browser window, type 127.0.0.1:8000/members/ in the address bar.
+
+Templates
+Create a templates folder inside the members folder, and create a HTML file named myfirst.html.
+
+Open the HTML file and insert the following:
+
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Hello world!</h1>
+        <p>Welcome to my first Django project!</p>
+    </body>
+</html>
+
+Open the views.py file in the members folder, and replace its content with this:
+
+def members(request):
+    template = loader.get_template('myfirst.html')
+    return HttpResponse(template.render())
+
+Change settings
+To be able to work with more complicated stuff than "Hello World!", We have to tell Django that a new app is created.
+
+This is done in the setting.py file in the my_tennis_club folder.
+
+Look up the INSTALLED_APPS[] list and add the members app like this:
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'members'
+]
+
+Then run this command:
+
+python3 manage.py migrate
+
+Start the server by navigating to the /my_tennis_club folder and execute this command:
+
+python3 manage.py runserver
+
+Django models
+A Django model is a table in your database.
+
+Create a table (model)
+To create a model, navigate to the models.py file in the /members/ folder.
+
+Open it, and add a Member table by creating a Member class, and describe the table fields in it:
+
+class Member(models.Model):
+    firstname = models.CharField(max_length=255)
+    lastname = models.CharField(max_length=255)
+
+Both firstname and lastname are Text field and are set up to have a maximum of 255 characters.
+
+SQLite Database
+When we created the Django project, we got an emty SQLite database.
+It was created in the my_tennis_club root folder, and has the filename db.sqlite3.
+By default, all Models created in the Django project will be created as tables in this database.
+
+Migrate
+Now when we have described a Model in the models.py file, we must run a command to actually create the table in the database.
+
+Navigate to the /my_tennis_club/ folder and run this command:
+
+python manage.py makemigrations members
+
+Django creates a file describing the changes and stores the file in the /migrations/ folder:
+
+my_tennis_club/members/migrations/0001_initial.py
+
+Note that Django inserts an id field for your tables, which is an auto increment number (first record gets the value 1, the second record 2 etc.), this is the default behavior of Django, you can override it by describing your own id field.
+
+The table is not created yet, you will have to run one more command, then Django will create and execute and SQL statement, based on the content of the new file in the /migrations/ folder.
+
+Run the migrate command:
+
+python3 manage.py migrate
+
+Now you have a Member table in you database.
+
+View SQL
+As a side-note: you can view the SQL statement that were executed from the migration above. All you have to do is to run this command, with the migration number:
+
+python3 manage.py sqlmigrate members 0001
+
+Insert data
+Add records
+
+We will use the Python interpreter (Python shell) to add some members to it.
+
+To open a Python shell, type this command:
+
+python3 manage.py shell
+
+At the bottom, after the three >>> write the following:
+
+from members.models import Member
+
+Hit [enter] and write this to look at the empty Member table:
+
+Member.objects.all()
+
+This should give you an empty QuerySet object, like this:
+
+<QuerySet []>
+
+Add a record to the table, by executing these two lines:
+
+member = Member(firstname='Emil', lastname='Refsnes')
+member.save()
+
+Execute this command to see if the Member table got a member:
+
+Member.objects.all().values()
+
+Add multiple records
+You can add multiple records by making a list of Member objects, and execute .save() on each entry:
+
+member1 = Member(firstname='Tobias', lastname='Refsnes')
+member2 = Member(firstname='Linus', lastname='Refsnes')
+member3 = Member(firstname='Lene', lastname='Refsnes')
+member4 = Member(firstname='stale', lastname='Refsnes')
+member5 = Member(firstname='Jane', lastname='Doe')
+members_list = [member1, member2, member3, member4, member5]
+for x in members_list:
+    x.save()
+
+Now, if you run this command:
+
+Member.objects.all().values()
+
+Update data
+
+Update records
+To update records that are already in the database, we first have to get the record we want to update:
+
+from members.models import Member
+x = Member.objects.all()[4]
+
+x will now represent the member at index 4, which is "Stale Refsnes", but to make sure, let us see if that is correct:
+
+x.firstname
+
+This should give you this result:
+
+'Stale'
+
+Now we can change the values of this record:
+
+x.firstname = "Stalikken"
+x.save()
+
+Execute this command to see if the Member table got updated:
+
+Member.objects.all().values()
+
+Delete data
+Delete records
+To delete a record in a table, start by getting the record you want to delete:
+
+from members.models import Member
+x = Member.objects.all()[5]
+
+x.firstname
+
+Now we can delete the record:
+
+x.delete()
+
+Update model
+Add fields in the model
+
+To add a field to a table after it is created, open the models.py file,and make your changes:
+
+class Member(models.Model):
+    firstname = models.CharField(max_length=255)
+    lastname = models.CharField(max_length=255)
+    phone = models.IntegerField()
+    joined_date = models.DateField()
+
+As you can see, we want to add phone and joined_date to out Member Model
+
+This is a change in the Model's structure, and therefor we have to make a migration to tell Django that it has to update the database:
+
+python3 manage.py makemigrations members
+
+The command above will result in a prompt, because we try to add fields that are not allowed to be null, to a table that already contains records.
+
+As you can see, Django asks if we want to provide the fields with a specific value, or if we want to stop the migration and fix it in the model.
+
+Select option 2, and open the models.py file again and allow NULL values for the two new fields:
+
+phone = models.IntegerField(null=True)
+joined_date = models.DateField(null=True)
+
+And make the migration once again.
+
+Run the migrate command:
+
+python3 manage.py migrate
+
+Insert data
+We can insert data to the two new fields with the same approach as we did in the Update data chapter
+
+python3 manage.py shell
+
+from members.models import Member
+
+x = Member.objects.all()[0]
+
+x.phone = 55551234
+
+x.joined_date = '2022-01-05'
+
+x.save()
+
+This will insert a phone number and a datee in the Member model, at least for first record.
+
+Execute this command to see if the Member table got update:
+
+Member.objects.all().values()
