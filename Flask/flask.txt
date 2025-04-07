@@ -1,0 +1,390 @@
+INSTALLING FLASK
+
+Create a work space folder FUNDAMENTOS_FLASK
+Enter to the folder.
+
+Install virtualenv.
+
+pip install virtualenv
+
+Create a virtual enviroment.
+
+virtualenv -p python3 env
+
+Activate the virtual enviroment.
+
+source env/bin/activate
+
+To quit the virtual enviroment use:
+
+deactivate
+
+Install flask
+
+pip install flask
+
+CREATE A FLASK APPLICATION
+
+Create a new folder with the name app.
+In the folder create a file with the name app.py.
+In the file type:
+
+from flask import Flask
+
+app = Flask(__name__)
+
+if __name__ == '__main__':
+    app.run()
+
+*This the basic code of a Flask application.
+
+RUN A FLASK APPLICATION
+
+Run the application with python.
+
+python3 app/app.py
+
+Go to a internet browser and enter to the direction http://127.0.0.1:5000
+Appear a message of Not found. It is fine.
+
+*The application is in Debud mode: off. It can't allow to apply the changes of the application directly. We need to run again the server to see the changes.
+
+Stop the server.
+
+Ctrl + c
+
+In the file app.py, after the variable app add the next code to send a view.
+
+@app.route('/')
+def index():
+    return "Hello world!!!"
+
+Run again the server.
+Stop the server.
+Activate the Debug mode. You can change the port including the parameter port=new port).
+
+app.run(debug=True,port=5000)
+
+Run again the server.
+
+CREATE TEMPLATES
+
+In the app folder, create a new folder with the name templates.
+
+*Flast recognize the folder templates where are the views for the application.
+
+Create an index.html file.
+
+Add the next code:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+    <h1>Index page!!!</h1>
+</body>
+</html>
+
+In the file app.py import the render options:
+
+from flask import Flask, render_template
+
+In the index method comment the last return and add the next code:
+
+return render_template('index.html')
+
+DYNAMIC CONTENT
+
+In the file app.py, in the index method add the next object:
+
+data = {
+    'title':'Index of the project',
+    'greetings':'Hello'
+}
+
+In the return of the render template add as a parameter.
+
+return render_template('index.html', data=data)
+
+Add the next code in the body of the index.html page:
+
+<h2>{{ data }}</h2>
+
+You can see the entire object. Now select an item:
+
+<h2>{{ data.greetings }}</h2>
+
+Try with a list
+
+cursos = ['PHP', 'Pytho', 'Java', 'Kotlin', 'Dart', 'JavaScript']
+
+Add the list to the object:
+
+data = {
+    'title':'Index of the project',
+    'greetings':'Hello',
+    'cursos':cursos,
+    'numero_cursos':len(cursos)
+}
+
+To add the completed list in the index.html page add the next code:
+
+<ul>
+    {% for c in data.cursos %}
+    <li>{{ c }}</li>
+    {% endfor %}
+</ul>
+
+Add condition in the index.html:
+
+{% if data.numero_cursos > 0 %}
+<ul>
+    {% for c in data.cursos %}
+    <li>{{ c }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<h2>No existen cursos...</h2>
+{% endif %}
+
+USING LAYOUTS
+
+In the folder templates create a file with the name layout.html.
+
+Copy the content of the file index.html.
+Paste the copied code in the file layout.html.
+In the element title replace the code with:
+
+{% block title %}{% endblock %}
+
+Copy the content of the body element.
+In the element body replace the code with:
+
+{% block body %}
+
+{% endblock %}
+
+*block is part of jinja2, it is use to indicate it will be the of some code. The second word is the name of the block, if you are going to replace some html element, you have to use the name of the element.
+
+In the index.html file comment the whole code.
+Add the code:
+
+{% extends './layout.html' %}
+
+{% block title %}{{ data.title }}{% endblock %}
+
+{% block body %}
+copied html code
+{% endblock %}
+
+Go to to the browser and check the result.
+
+STATIC FILES
+
+In the folder app create a new folder with the name static.
+In this folder we can save files .css, .js, images or libraries.
+Enter the folder static and create two new folders with the name css and js.
+In the folder css create the file layout.css.
+Add the code:
+
+body {
+    background-color: peru;
+}
+
+In the file layout.html add the css file with the next code in the head section:
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+
+In the folder js create the file layout.js.
+Add the code:
+
+alert("Hello world!!!");
+
+In the file layout.html add the js file with the next code after the block body:
+
+<script src="{{ url_for('static', filename='js/layout.js') }}"></script>
+
+DYNAMIC URLS
+
+In the file app.py, after the method index add the next code:
+
+@app.route('/contacto/<nombre>')
+def contacto(nombre):
+    data = {
+        'titulo':'Contacto',
+        'nombre':nombre
+    }
+    return render_template('contacto.html', data=data)
+
+<> indicate a parameter.
+
+In the folder templates create a file with the name contacto.html.
+Add the next code:
+
+{% extends './layout.html' %}
+
+{% block title %}{{ data.title }}{% endblock %}
+
+{% block body %}
+<h1>{{ data.nombre }}</h1>
+{% endblock %}
+
+Go to the browser and got to the direction http://127.0.0.1:5000/contacto/Juan
+
+Add more parameters to the URL.
+Modify the @app.route:
+
+@app.route('/contacto/<nombre>/<int:edad>')
+
+Modify the method:
+def contacto(nombre, edad):
+
+Modify the object:
+
+data = {
+    'titulo':'Contacto',
+    'nombre':nombre,
+    'edad':edad
+}
+
+In the file contacto.html add the code:
+
+<h2>Tu edad es: {{ data.edad }}</h2>
+
+Go to the browser and got to the direction http://127.0.0.1:5000/contacto/Juan/28
+*If the second parameter is not included, the browser send a not found message.
+
+QUERY STRING
+
+In the file app.py import the option request:
+
+from flask import Flask, render_template, request
+
+Add after the contacto method the next code:
+
+def query_string():
+    print(request)
+    return "OK"
+
+if __name__ == '__main__':
+    app.add_url_rule('/query_string', view_func=query_string)
+    app.run(debug=True, port=5000)
+
+Go to the browser and go to the direction http://127.0.0.1:5000/query_string
+
+Return to the code in the app.py file.
+Modify the method query_string:
+
+def query_string():
+    print(request)
+    print(request.args)
+    print(request.args.get('param1'))
+    return "OK"
+
+Go to the browser and go to the direction http://127.0.0.1:5000/query_string?param1=jose
+In the browser there is not any change, but in the console the server show the parameter 'jose'.
+Add another parameter to the code:
+
+print(request.args.get('param2'))
+
+Go to the browser and go to the direction http://127.0.0.1:5000/query_string?param1=jose&param2=29
+Check the console of the server.
+
+CONTROLING THE ERROR CODES
+
+In the file app.py create a method with the name pagina_no_encontrada.
+
+def pagina_no_encontrada(error):
+    return render_template('404.html'), 404
+
+Add the error handler:
+
+if __name__ == '__main__':
+    app.add_url_rule('/query_string', view_func=query_string)
+    app.register_error_handler(404, pagina_no_encontrada)
+    app.run(debug=True, port=5000)
+
+Go to templates folder and create the file 404.html.
+Add the next code:
+
+{% extends './layout.html' %}
+
+{% block title %}Pagina no encontrada{% endblock %}
+
+{% block body %}
+<h2>Opsss... La pagina que buscas no existe!</h2>
+{% endblock %}
+
+Add a redirection, import the options url_for and redirect:
+
+from flask import Flask, render_template, request, url_for, redirect
+
+Comment the return of the pagina_no_encontrada method and add the next code:
+
+return redirect(url_for('index'))
+
+ACTION BEFORE AND AFTER OF A REQUEST
+
+In the file app.py, after the variable app add the next code:
+
+@app.before_request
+def before_request():
+    print("Antes de la peticion...")
+
+@app.after_request
+def after_request(response):
+    print("Despues de la peticion")
+    return response
+
+Go to the browser and go to the index. The result will be shown in the server console.
+
+CONNECTION WITH MYSQL
+
+Stop the server.
+
+Go to a new terminal and install the next packages:
+
+sudo apt install python3-dev default-libmysqlclient-dev build-essential pkg-config
+
+Install MySQL packages.
+
+pip install flask-mysqldb
+
+Go to the app.py file and import the mysql library:
+
+from flask_mysqldb import MySQL
+
+Import jsonify:
+
+from flask import Flask, render_template, request, url_for, redirect, jsonify
+
+After the app variable add the mysql connection parameters:
+
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = '123456'
+app.config['MYSQL_DB'] = 'abaco'
+
+conexion = MySQL(app)
+
+Create the next method:
+
+@app.route('/cursos')
+def listar_cursos():
+    data = {}
+    try:
+        cursor = conexion.connection.cursos()
+        sql = "SELECT codigo, nombre, creditos FROM curso ORDER BY nombre ASC"
+        cursor.execute(sql)
+        cursos = cursor.fetchall()
+        data['cursos'] = cursos
+        data['mensaje'] - 'Exito'
+    except Exception as ex:
+        data['mensaje'] = 'Error...'
+    return jsonify(data)
+
+Go to the browser and go to the direction http://127.0.0.1:5000/cursos
